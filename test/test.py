@@ -7,7 +7,7 @@ from cocotb.triggers import ClockCycles
 
 
 @cocotb.test()
-async def test_project(dut):
+async def test_counter(dut):
     dut._log.info("Start")
 
     # Set the clock period to 10 us (100 KHz)
@@ -23,18 +23,31 @@ async def test_project(dut):
     await ClockCycles(dut.clk, 10)
     dut.rst_n.value = 1
 
-    dut._log.info("Test project behavior")
+    dut._log.info("Test counter without enable")
+    dut.ui_in.value = 0  # enable = 0
+    await ClockCycles(dut.clk, 10)
+    assert dut.uo_out.value == 0, "Counter should not increment when enable is 0"
 
-    # Set the input values you want to test
-    dut.ui_in.value = 20
-    dut.uio_in.value = 30
+    dut._log.info("Test counter with enable")
+    dut.ui_in.value = 1  # enable = 1
+    
+    # Test counting from 0 to 15
+    for i in range(16):
+        await ClockCycles(dut.clk, 1)
+        expected = (i + 1) & 0xF
+        actual = int(dut.uo_out.value) & 0xF
+        dut._log.info(f"Clock cycle {i+1}: Expected {expected}, Got {actual}")
+        assert actual == expected, f"Counter mismatch: expected {expected}, got {actual}"
 
-    # Wait for one clock cycle to see the output values
+    # Test wrap around
     await ClockCycles(dut.clk, 1)
+    actual = int(dut.uo_out.value) & 0xF
+    dut._log.info(f"After wrap: Expected 0, Got {actual}")
+    assert actual == 0, f"Counter should wrap to 0, got {actual}"
 
-    # The following assersion is just an example of how to check the output values.
-    # Change it to match the actual expected output of your module:
-    assert dut.uo_out.value == 50
-
-    # Keep testing the module by changing the input values, waiting for
-    # one or more clock cycles, and asserting the expected output values.
+    dut._log.info("Test counter disable")
+    current_value = int(dut.uo_out.value) & 0xF
+    dut.ui_in.value = 0  # disable counter
+    await ClockCycles(dut.clk, 10)
+    final_value = int(dut.uo_out.value) & 0xF
+    assert current_value == final_value, "Counter should not change when disabled"
