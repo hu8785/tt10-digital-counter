@@ -16,10 +16,10 @@ module tt_um_Akanksha_hu8785_counter (
     input  wire       rst_n     // reset_n - low to reset
 );
 
-  // 4-bit counter
+   // 4-bit counter
   reg [3:0] count;
   
-  // Enable signal from ui[0]
+  // Enable signal from ui_in[0]
   wire enable;
   assign enable = ui_in[0];
   
@@ -27,11 +27,18 @@ module tt_um_Akanksha_hu8785_counter (
   always @(posedge clk) begin
     if (!rst_n) begin
       count <= 4'b0000;
-    end else if (enable) begin
-      count <= count + 1'b1;
+    end else begin
+      if (enable) begin
+        count <= count + 1;
+      end
+      // If enable is 0, count holds its value
     end
   end
   
+  // Output assignments
+  assign uo_out[3:0] = count;    // Count outputs on uo[0:3]
+  assign uo_out[7:4] = 4'b0000;  // Unused outputs
+
   // Output assignments
   assign uo_out[3:0] = count;    // Count outputs on uo[0:3]
   assign uo_out[7:4] = 4'b0000;  // Unused outputs
@@ -44,3 +51,4 @@ module tt_um_Akanksha_hu8785_counter (
   wire _unused = &{ena, ui_in[7:1], uio_in, 1'b0};
 
 endmodule
+
