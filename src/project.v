@@ -18,23 +18,31 @@ module tt_um_Akanksha_hu8785_counter (
 
   // 4-bit counter
   reg [3:0] count;
+  reg [3:0] count_next;
   
   // Enable signal from ui_in[0]
   wire enable;
   assign enable = ui_in[0];
   
-  // Counter logic with synchronous reset
+  // Combinational logic for next count value
+  always @(*) begin
+    if (enable)
+      count_next = count + 4'b0001;
+    else
+      count_next = count;
+  end
+  
+  // Sequential logic
   always @(posedge clk) begin
     if (!rst_n) begin
       count <= 4'b0000;
-    end else if (enable) begin
-      count <= count + 4'b0001;  // Explicit 4-bit increment
+    end else begin
+      count <= count_next;
     end
-    // else count holds its value (implicit)
   end
   
-  // Output assignments - drive full 8-bit output
-  assign uo_out = {4'b0000, count};  // Concatenate: upper 4 bits = 0, lower 4 bits = count
+  // Output assignments
+  assign uo_out = {4'b0000, count};
   
   // All IOs configured as inputs (not used)
   assign uio_out = 8'b00000000;
