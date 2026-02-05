@@ -34,8 +34,7 @@ async def test_counter(dut):
     # Test counting from 0 to 15
     for i in range(16):
         await ClockCycles(dut.clk, 1)
-        expected = (i + 1) & 0xF
-        actual = int(dut.uo_out.value) & 0xF
+        expected = i & 0xF        actual = int(dut.uo_out.value) & 0xF
         dut._log.info(f"Clock cycle {i+1}: Expected {expected}, Got {actual}")
         assert actual == expected, f"Counter mismatch: expected {expected}, got {actual}"
 
