@@ -6,16 +6,10 @@ project:
   description: "A 4-bit digital counter that counts from 0 to 15"
   language: "Verilog"
   clock_hz: 50000000
-
-# How many tiles your design occupies? A single tile is about 167x108 uM.
-tiles: "1x1"
-
-# Your top module name must start with "tt_um_". Make it unique by including your github username:
-top_module: "tt_um_Akanksha_hu8785_counter"
-
-# List your project's source files here.
-source_files:
-  - "project.v"
+  tiles: "1x1"
+  top_module: "tt_um_Akanksha_hu8785_counter"
+  source_files:
+    - "project.v"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:
